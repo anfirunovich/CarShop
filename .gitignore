@@ -5,4 +5,4 @@ __pycache__
 
 migrations
 
-./car_showroom/.env
+.env
