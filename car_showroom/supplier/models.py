@@ -12,9 +12,16 @@ from showroom.models import Showroom
 
 class Car(CreatedAt, UpdatedAt, SoftDelete):
 
-    name = models.CharField(
+    manufacturer = models.CharField(
         max_length=255,
-        verbose_name="Name of car",
+        verbose_name="Сar manufacturer",
+        null=False,
+        blank=False,
+    )
+
+    brand = models.CharField(
+        max_length=255,
+        verbose_name="Brand of car",
         null=False,
         blank=False,
     )
