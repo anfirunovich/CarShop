@@ -91,8 +91,19 @@ class Showroom(CreatedAt, SoftDelete, UpdatedAt):
 class CarOfShowroom(CreatedAt, UpdatedAt, SoftDelete):
 
     car = models.ForeignKey(Car, on_delete=models.SET_NULL, null=True,)
-    showroom = models.ForeignKey(Showroom, on_delete=models.CASCADE, null=True, blank=True,)
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True,)
+    showroom = models.ForeignKey(
+        Showroom,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
+    supplier = models.ForeignKey(
+        Supplier,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     count = models.PositiveIntegerField(default=1)
 
@@ -100,7 +111,12 @@ class CarOfShowroom(CreatedAt, UpdatedAt, SoftDelete):
 class ShowroomSale(CreatedAt, UpdatedAt, SoftDelete):
 
     car = models.ForeignKey(Car, on_delete=models.SET_NULL, null=True,)
-    showroom = models.ForeignKey(Showroom, on_delete=models.CASCADE, null=True, blank=True,)
+    showroom = models.ForeignKey(
+        Showroom,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     discount = DecimalRangeField(
         max_digits=10,

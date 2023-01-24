@@ -49,11 +49,7 @@ class Car(CreatedAt, UpdatedAt, SoftDelete):
         choices=CarType.choices(),
     )
 
-    price = DecimalRangeField(
-        null=True,
-        min_value=1,
-        max_value=9999999,
-    )
+    price = DecimalRangeField(null=True, min_value=1, max_value=9999999,)
 
     def __str__(self):
         return self.name
@@ -87,7 +83,12 @@ class Supplier(CreatedAt, UpdatedAt, SoftDelete):
 class CarOfSupplier(CreatedAt, UpdatedAt, SoftDelete):
 
     car = models.ForeignKey(Car, on_delete=models.SET_NULL, null=True,)
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True,)
+    supplier = models.ForeignKey(
+        Supplier,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     count = models.PositiveIntegerField(default=1)
 

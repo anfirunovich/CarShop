@@ -11,10 +11,23 @@ from supplier.models import Car
 
 class Customer(CreatedAt, SoftDelete, UpdatedAt):
 
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255, blank=True)
+    first_name = models.CharField(
+        max_length=255,
+        verbose_name=" First name",
+        null=False,
+        blank=False
+    )
+
+    last_name = models.CharField(
+        max_length=255,
+        verbose_name="Last name",
+        null=False,
+        blank=False
+    )
+
     sex = models.CharField(
         max_length=255,
+        verbose_name="Sex",
         choices=PersonSexesEnum.choices(),
         blank=True,
         null=True
