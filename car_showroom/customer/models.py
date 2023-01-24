@@ -1,3 +1,5 @@
+from car_showroom.car_showroom import settings
+
 from core.model_mixins import CreatedAt, SoftDelete, UpdatedAt
 from core.validators import phone_number_validator
 
@@ -27,6 +29,13 @@ class Customer(CreatedAt, SoftDelete, UpdatedAt):
     )
 
     balance = models.DecimalField(min_value=0, max_value=9999999,)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=False,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
 
 class Offer(CreatedAt, SoftDelete, UpdatedAt):
