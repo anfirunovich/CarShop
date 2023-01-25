@@ -43,11 +43,10 @@ class Customer(CreatedAt, SoftDelete, UpdatedAt):
 
     balance = models.DecimalField(min_value=0, max_value=9999999,)
 
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        blank=False,
-        null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
+        primary_key=True,
     )
 
 

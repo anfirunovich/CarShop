@@ -4,10 +4,12 @@ from django.contrib.postgres.fields import DecimalRangeField
 from core.model_mixins import CreatedAt, SoftDelete, UpdatedAt
 
 from supplier.enums.car_color import CarColor
+from supplier.enums.car_transmission import TransmissionType
 from supplier.enums.car_type import CarType
 
 from django.db import models
 from showroom.models import Showroom
+from showroom.models import Location
 
 
 class Car(CreatedAt, UpdatedAt, SoftDelete):
@@ -49,6 +51,20 @@ class Car(CreatedAt, UpdatedAt, SoftDelete):
         choices=CarType.choices(),
     )
 
+    engine_power = models.PositiveSmallIntegerField(
+        validators=(
+            MaxValueValidator(900),
+            MinValueValidator(100),
+        )
+    )
+
+    transmission = models.CharField(
+        max_length=255,
+        verbose_name="Transmission",
+        blank=True,
+        choices=TransmissionType.choices(),
+    )
+
     price = DecimalRangeField(null=True, min_value=1, max_value=9999999,)
 
     def __str__(self):
@@ -67,6 +83,14 @@ class Supplier(CreatedAt, UpdatedAt, SoftDelete):
 
     info = models.TextField(verbose_name="Info about supplier", null=True, blank=True,)
     foundation_date = models.DateField(verbose_name="Foundation date", null=True, blank=True)
+
+    locations = models.ManyToManyField(
+        Location,
+        verbose_name="Location of supplier",
+        related_name="supplier",
+        related_query_name="supplier",
+        blank=False,
+    )
 
     cars = models.ManyToManyField(Car)
 
