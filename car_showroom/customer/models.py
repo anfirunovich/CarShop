@@ -1,12 +1,11 @@
-from car_showroom.car_showroom import settings
+from django.conf import settings
+from django.db import models
 
 from core.model_mixins import CreatedAt, SoftDelete, UpdatedAt
 from core.validators import phone_number_validator
+from core.models import Car
 
 from customer.enums.person_sexes import PersonSexesEnum
-
-from django.db import models
-from supplier.models import Car
 
 
 class Customer(CreatedAt, SoftDelete, UpdatedAt):
@@ -15,14 +14,14 @@ class Customer(CreatedAt, SoftDelete, UpdatedAt):
         max_length=255,
         verbose_name=" First name",
         null=False,
-        blank=False
+        blank=False,
     )
 
     last_name = models.CharField(
         max_length=255,
         verbose_name="Last name",
         null=False,
-        blank=False
+        blank=False,
     )
 
     sex = models.CharField(
@@ -30,7 +29,7 @@ class Customer(CreatedAt, SoftDelete, UpdatedAt):
         verbose_name="Sex",
         choices=PersonSexesEnum.choices(),
         blank=True,
-        null=True
+        null=True,
     )
 
     phone_number = models.CharField(
@@ -41,7 +40,7 @@ class Customer(CreatedAt, SoftDelete, UpdatedAt):
         validators=(phone_number_validator,),
     )
 
-    balance = models.DecimalField(min_value=0, max_value=9999999,)
+    balance = models.DecimalField(max_digits=10, decimal_places=2)
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -58,7 +57,7 @@ class Offer(CreatedAt, SoftDelete, UpdatedAt):
         Car,
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
     )
 
-    max_price = models.DecimalField(null=True, min_value=1, max_value=9999999,)
+    max_price = models.DecimalField(max_digits=10, decimal_places=2)

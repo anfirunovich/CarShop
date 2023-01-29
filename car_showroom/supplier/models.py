@@ -1,74 +1,10 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.postgres.fields import DecimalRangeField
+from django.db import models
 
 from core.model_mixins import CreatedAt, SoftDelete, UpdatedAt
+from core.models import Car
 
-from supplier.enums.car_color import CarColor
-from supplier.enums.car_transmission import TransmissionType
-from supplier.enums.car_type import CarType
-
-from django.db import models
-from showroom.models import Showroom
-from showroom.models import Location
-
-
-class Car(CreatedAt, UpdatedAt, SoftDelete):
-
-    manufacturer = models.CharField(
-        max_length=255,
-        verbose_name="Сar manufacturer",
-        null=False,
-        blank=False,
-    )
-
-    brand = models.CharField(
-        max_length=255,
-        verbose_name="Brand of car",
-        null=False,
-        blank=False,
-    )
-
-    description = models.TextField(verbose_name="Description of car", null=True, blank=True,)
-
-    year = models.IntegerField(
-        validators=(
-            MaxValueValidator(2023),
-            MinValueValidator(1999),
-        )
-    )
-
-    color = models.CharField(
-        max_length=255,
-        verbose_name="Color of car",
-        blank=True,
-        choices=CarColor.choices(),
-    )
-
-    type = models.CharField(
-        max_length=255,
-        verbose_name="Type of car",
-        blank=True,
-        choices=CarType.choices(),
-    )
-
-    engine_power = models.PositiveSmallIntegerField(
-        validators=(
-            MaxValueValidator(900),
-            MinValueValidator(100),
-        )
-    )
-
-    transmission = models.CharField(
-        max_length=255,
-        verbose_name="Transmission",
-        blank=True,
-        choices=TransmissionType.choices(),
-    )
-
-    price = DecimalRangeField(null=True, min_value=1, max_value=9999999,)
-
-    def __str__(self):
-        return self.name
+from showroom.models import Showroom, Location
 
 
 class Supplier(CreatedAt, UpdatedAt, SoftDelete):
@@ -81,21 +17,29 @@ class Supplier(CreatedAt, UpdatedAt, SoftDelete):
         blank=False,
     )
 
-    info = models.TextField(verbose_name="Info about supplier", null=True, blank=True,)
+    info = models.TextField(verbose_name="Info about supplier", null=True, blank=True)
     foundation_date = models.DateField(verbose_name="Foundation date", null=True, blank=True)
 
     locations = models.ManyToManyField(
         Location,
         verbose_name="Location of supplier",
-        related_name="supplier",
+        related_name="suppliers",
         related_query_name="supplier",
         blank=False,
     )
 
-    cars = models.ManyToManyField(Car)
+    cars = models.ManyToManyField(
+        Car,
+        verbose_name="Car of supplier",
+        through="CarOfSupplier",
+        through_fields=('car', 'supplier'),
+        related_name="supplier",
+        related_query_name="supplier",
+    )
 
     customers = models.ManyToManyField(
         Showroom,
+        verbose_name="Customer of supplier",
         related_name="suppliers",
         related_query_name="supplier",
     )
@@ -106,34 +50,45 @@ class Supplier(CreatedAt, UpdatedAt, SoftDelete):
 
 class CarOfSupplier(CreatedAt, UpdatedAt, SoftDelete):
 
-    car = models.ForeignKey(Car, on_delete=models.SET_NULL, null=True,)
+    car = models.ForeignKey(
+        Car,
+        verbose_name="Car",
+        related_name="suppliers",
+        related_query_name="supplier",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+
     supplier = models.ForeignKey(
         Supplier,
+        verbose_name="Supplier",
+        related_name="suppliers",
+        related_query_name="supplier",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
 
-    count = models.PositiveIntegerField(default=1)
+    count = models.PositiveIntegerField(verbose_name="Count of car", default=1)
 
 
 class SupplierSale(CreatedAt, UpdatedAt, SoftDelete):
 
-    car = models.ForeignKey(Car, on_delete=models.SET_NULL, null=True, )
+    car = models.ForeignKey(
+        Car,
+        verbose_name="Car",
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
     supplier = models.ForeignKey(
         Supplier,
+        verbose_name="Supplier",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
 
-    discount = DecimalRangeField(
-        max_digits=10,
-        decimal_places=2,
-        default=1,
-        min_value=1,
-        max_value=100,
-    )
-
+    discount = DecimalRangeField(default=1)
     end_date = models.DateField(blank=True)
 

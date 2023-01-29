@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from showroom.models import Showroom, Location
+from showroom.models import Showroom
 
 
 class ShowroomSerializer(serializers.ModelSerializer):
@@ -44,14 +44,3 @@ class ShowroomCreateSerializer(serializers.ModelSerializer):
         )
 
 
-class LocationSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Location
-        fields = (
-            'id',
-            'country',
-            'city',
-            'street',
-            'house_number',
-        )

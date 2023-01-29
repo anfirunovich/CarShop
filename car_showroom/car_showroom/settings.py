@@ -38,8 +38,6 @@ INSTALLED_APPS = [
     'django_countries',
     'django_filters',
     'rest_framework',
-    'mixins',
-    'django_model_mixins',
     'customer',
     'showroom',
     'supplier',

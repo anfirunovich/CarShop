@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
-from customer.models import Customer, Offer
 from customer.serializers import CustomerSerializer, OfferSerializer
+from customer.models import Customer, Offer
 
 
 class CustomerViewSet(ModelViewSet):
