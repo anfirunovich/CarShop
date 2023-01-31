@@ -14,33 +14,4 @@ class ShowroomSerializer(serializers.ModelSerializer):
         )
 
 
-class ShowroomRetrieveSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Showroom
-        fields = (
-            'id',
-            'name',
-            'info',
-            'locations',
-            'balance',
-            'customers',
-            'cars',
-        )
-
-
-class ShowroomCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Showroom
-        fields = (
-            'id',
-            'name',
-            'info',
-            'locations',
-            'balance',
-            'customers',
-            'cars',
-        )
-
 

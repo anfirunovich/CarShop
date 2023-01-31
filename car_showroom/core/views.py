@@ -1,6 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
 from core.serializers import CarSerializer, LocationSerializer
+
 from core.models import Car, Location
 
 

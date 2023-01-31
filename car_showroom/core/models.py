@@ -1,13 +1,10 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
-
 from django.contrib.postgres.fields import DecimalRangeField
-
-from model_mixins import CreatedAt, SoftDelete, UpdatedAt
+from django.db import models
 
 from django_countries.fields import CountryField
 
-from django.db import models
-
+from core.model_mixins import CreatedAt, SoftDelete, UpdatedAt
 from core.enums.car_transmission import TransmissionType
 from core.enums.car_color import CarColor
 from core.enums.car_type import CarType
@@ -72,6 +69,7 @@ class Car(CreatedAt, UpdatedAt, SoftDelete):
         Manufacturer,
         max_length=255,
         verbose_name="Сar manufacturer",
+        on_delete=models.CASCADE,
         null=False,
         blank=False,
     )

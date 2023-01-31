@@ -6,8 +6,6 @@ from core.models import Location, Car
 
 from customer.models import Customer
 
-from supplier.models import Supplier
-
 
 class Showroom(CreatedAt, SoftDelete, UpdatedAt):
 
@@ -46,7 +44,7 @@ class Showroom(CreatedAt, SoftDelete, UpdatedAt):
       Car,
       verbose_name="Car",
       through="CarOfShowroom",
-      through_fields=('car', 'showroom'),
+      through_fields=('showroom', 'car'),
       related_name="showroom_cars",
       related_query_name="showroom_car",
     )
@@ -73,7 +71,7 @@ class CarOfShowroom(CreatedAt, UpdatedAt, SoftDelete):
     )
 
     supplier = models.ForeignKey(
-       Supplier,
+       "supplier.Supplier",
        verbose_name="Supplier",
        on_delete=models.CASCADE,
        null=True,

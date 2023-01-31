@@ -2,9 +2,9 @@ from django.contrib.postgres.fields import DecimalRangeField
 from django.db import models
 
 from core.model_mixins import CreatedAt, SoftDelete, UpdatedAt
-from core.models import Car
+from core.models import Car, Location
 
-from showroom.models import Showroom, Location
+from showroom.models import Showroom
 
 
 class Supplier(CreatedAt, UpdatedAt, SoftDelete):
@@ -32,8 +32,8 @@ class Supplier(CreatedAt, UpdatedAt, SoftDelete):
         Car,
         verbose_name="Car of supplier",
         through="CarOfSupplier",
-        through_fields=('car', 'supplier'),
-        related_name="supplier",
+        through_fields=('supplier', 'car'),
+        related_name="suppliers",
         related_query_name="supplier",
     )
 
@@ -53,8 +53,8 @@ class CarOfSupplier(CreatedAt, UpdatedAt, SoftDelete):
     car = models.ForeignKey(
         Car,
         verbose_name="Car",
-        related_name="suppliers",
-        related_query_name="supplier",
+        related_name="cars_of_suppliers",
+        related_query_name="car_of_supplier",
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -62,8 +62,8 @@ class CarOfSupplier(CreatedAt, UpdatedAt, SoftDelete):
     supplier = models.ForeignKey(
         Supplier,
         verbose_name="Supplier",
-        related_name="suppliers",
-        related_query_name="supplier",
+        related_name="cars_of_suppliers",
+        related_query_name="car_of_supplier",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
