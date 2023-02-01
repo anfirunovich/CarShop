@@ -7,7 +7,6 @@ from showroom.serializers import ShowroomSerializer
 
 class ShowroomViewSet(ModelViewSet):
 
-    default_serializer_class = ShowroomSerializer
     serializer_class = ShowroomSerializer
 
     queryset = Showroom.objects.filter(is_active=True).all()
