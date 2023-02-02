@@ -1,3 +1,15 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
 
-# Create your views here.
+from showroom.models import Showroom
+
+from showroom.serializers import ShowroomSerializer
+
+
+class ShowroomViewSet(ModelViewSet):
+
+    serializer_class = ShowroomSerializer
+
+    queryset = Showroom.objects.filter(is_active=True).all()
+
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.default_serializer_class)
