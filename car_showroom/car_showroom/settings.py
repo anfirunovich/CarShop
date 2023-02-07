@@ -43,6 +43,8 @@ THIRD_PARTY_APPS = [
     'django_countries',
     'django_filters',
     'rest_framework_simplejwt',
+    'drf_yasg',
+    'debug_toolbar',
 ]
 
 LOCAL_APPS = [
@@ -80,6 +82,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'car_showroom.urls'
@@ -160,3 +163,13 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.User'
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+}
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+USE_SWAGGER = True

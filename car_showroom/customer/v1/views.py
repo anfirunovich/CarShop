@@ -1,7 +1,7 @@
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 
-from customer.serializers import CustomerSerializer, OfferSerializer
+from customer.v1.serializers import CustomerSerializer, OfferSerializer
 
 from customer.models import Customer, Offer
 

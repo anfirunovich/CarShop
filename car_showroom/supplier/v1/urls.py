@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from supplier.views import SupplierViewSet
+from supplier.v1.views import SupplierViewSet
 
 
 router = routers.DefaultRouter()

@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from showroom.models import Showroom
 
-from showroom.serializers import ShowroomSerializer
+from showroom.v1.serializers import ShowroomSerializer
 
 
 class ShowroomViewSet(ModelViewSet):
@@ -13,5 +13,4 @@ class ShowroomViewSet(ModelViewSet):
 
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_serializer_class(self):
-        return self.serializer_classes.get(self.action, self.default_serializer_class)
+

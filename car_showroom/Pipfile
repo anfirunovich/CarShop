@@ -10,6 +10,9 @@ psycopg2-binary = "*"
 django = "*"
 django-filter = "*"
 djangorestframework-simplejwt = "*"
+django-debug-toolbar = "*"
+drf-yasg = "*"
+django-rest-swagger= "*"
 
 [dev-packages]
 

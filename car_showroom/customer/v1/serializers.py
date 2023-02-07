@@ -8,13 +8,12 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = (
-            'id',
             'first_name',
             'last_name',
             'sex',
             'phone_number',
             'balance',
-            'user',
+            'user_id',
         )
 
 
