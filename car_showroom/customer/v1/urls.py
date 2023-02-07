@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from customer.views import CustomerViewSet, OfferViewSet
+from customer.v1.views import CustomerViewSet, OfferViewSet
 
 
 router = routers.DefaultRouter()

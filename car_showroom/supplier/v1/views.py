@@ -1,7 +1,7 @@
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 
-from supplier.serializers import SupplierSerializer
+from supplier.v1.serializers import SupplierSerializer
 
 from supplier.models import Supplier
 
