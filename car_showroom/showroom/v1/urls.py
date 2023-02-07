@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from showroom.views import ShowroomViewSet
+from showroom.v1.views import ShowroomViewSet
 
 
 router = routers.DefaultRouter()

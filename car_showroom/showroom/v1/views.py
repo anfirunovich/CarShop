@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from showroom.models import Showroom
 
-from showroom.serializers import ShowroomSerializer
+from showroom.v1.serializers import ShowroomSerializer
 
 
 class ShowroomViewSet(ModelViewSet):
