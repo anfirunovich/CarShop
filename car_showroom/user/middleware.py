@@ -1,3 +1,4 @@
+
 import jwt
 
 from django.conf import settings
@@ -12,11 +13,9 @@ from django.utils.deprecation import MiddlewareMixin
 def simple_middleware(get_response):
 
     def middleware(request):
-        print("Before response")
 
         response = get_response(request)
 
-        print("After response")
         return response
 
     return middleware
