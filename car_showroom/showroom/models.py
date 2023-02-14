@@ -31,7 +31,12 @@ class Showroom(CreatedAt, SoftDelete, UpdatedAt):
         blank=False,
     )
 
-    balance = DecimalRangeField(verbose_name="Balance of showroom", null=True)
+    balance = models.DecimalField(
+        verbose_name="Balance of showroom",
+        max_digits=10,
+        decimal_places=2,
+        null=True
+    )
 
     customers = models.ManyToManyField(
         Customer,
