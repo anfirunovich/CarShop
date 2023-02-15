@@ -13,6 +13,8 @@ djangorestframework-simplejwt = "*"
 django-debug-toolbar = "*"
 drf-yasg = "*"
 django-rest-swagger= "*"
+celery = "*"
+redis = "*"
 
 [dev-packages]
 
