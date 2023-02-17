@@ -1,4 +1,3 @@
-
 import jwt
 
 from django.conf import settings
@@ -10,20 +9,9 @@ from rest_framework import exceptions
 from django.utils.deprecation import MiddlewareMixin
 
 
-def simple_middleware(get_response):
-
-    def middleware(request):
-
-        response = get_response(request)
-
-        return response
-
-    return middleware
-
-
 class CustomMiddleware(MiddlewareMixin):
 
-    def authenticate(self, request):
+    def authenticate(self, request, user_id):
 
         User = get_user_model()
         authorization_header = request.headers.get('Authorization')
@@ -41,7 +29,11 @@ class CustomMiddleware(MiddlewareMixin):
         except IndexError:
             raise exceptions.AuthenticationFailed('Token prefix missing')
 
-        user = User.objects.filter(id=payload['user_id']).first()
+        try:
+            user = User.objects.get(id=user_id)
+
+        except User.DoesNotExist:
+            raise exceptions.AuthenticationFailed('User does not exist')
 
         if user is None:
             raise exceptions.AuthenticationFailed('User not found')
