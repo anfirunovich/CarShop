@@ -9,22 +9,9 @@ from rest_framework import exceptions
 from django.utils.deprecation import MiddlewareMixin
 
 
-def simple_middleware(get_response):
-
-    def middleware(request):
-        print("Before response")
-
-        response = get_response(request)
-
-        print("After response")
-        return response
-
-    return middleware
-
-
 class CustomMiddleware(MiddlewareMixin):
 
-    def authenticate(self, request):
+    def authenticate(self, request, user_id):
 
         User = get_user_model()
         authorization_header = request.headers.get('Authorization')
@@ -42,10 +29,11 @@ class CustomMiddleware(MiddlewareMixin):
         except IndexError:
             raise exceptions.AuthenticationFailed('Token prefix missing')
 
-        user = User.objects.filter(id=payload['user_id']).first()
+        try:
+            user = User.objects.get(id=user_id)
 
-        if user is None:
-            raise exceptions.AuthenticationFailed('User not found')
+        except User.DoesNotExist:
+            raise exceptions.AuthenticationFailed('User does not exist')
 
         if not user.is_active:
             raise exceptions.AuthenticationFailed('User is inactive')
