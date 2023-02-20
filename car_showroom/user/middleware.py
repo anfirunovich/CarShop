@@ -35,9 +35,6 @@ class CustomMiddleware(MiddlewareMixin):
         except User.DoesNotExist:
             raise exceptions.AuthenticationFailed('User does not exist')
 
-        if user is None:
-            raise exceptions.AuthenticationFailed('User not found')
-
         if not user.is_active:
             raise exceptions.AuthenticationFailed('User is inactive')
 
