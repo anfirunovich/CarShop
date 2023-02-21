@@ -1,4 +1,7 @@
-from django.db.models import Q, F
+from datetime import datetime
+from decimal import Decimal
+
+from django.db.models import Q
 
 from celery import app
 
@@ -10,33 +13,61 @@ from showroom.models import CarOfShowroom, ShowroomSale
 @app.task
 def customer_buy_cars():
     for customer in Customer.objects.all():
-        sample = customer.sortquery
 
         find_suppliers_q = (
-                Q(car__manufacturer__startswith=sample[0].get('manufacturer')) &
-                Q(car__brand__startswith=sample[1].get('brand')) &
-                Q(car__color__startswith=sample[2].get('color')) &
-                Q(car__type__startswith=sample[3].get('type')) &
-                Q(car__price__lte=sample[4].get('price'))
+                Q(car__manufacturer__startswith=customer.get('manufacturer')) &
+                Q(car__brand__startswith=customer.get('brand')) &
+                Q(car__color__startswith=customer.get('color')) &
+                Q(car__type__startswith=customer.get('type')) &
+                Q(car__price__lte=customer.get('price'))
         )
 
-        showroom_discount = ShowroomSale.objects.filter(find_suppliers_q).order_by('-discount').first()
-        showroom_cars = CarOfShowroom.objects.filter(find_suppliers_q).order_by('manufacturer')
+        showroom_cars = CarOfShowroom.objects.filter(find_suppliers_q)
+
+        showroom_discounts = ShowroomSale.objects.filter(
+            date_end__lte=datetime.utcnow(),
+            car_id__in=[
+                showroom_car.car_id
+                for showroom_car in showroom_cars
+            ],
+            showroom_id__in=[
+                showroom_car.showroom_id
+                for showroom_car in showroom_cars
+            ],
+        ).order_by('-discount')
+
+        showroom_discounts_map = {
+            (
+                showroom_discount.showroom_id,
+                showroom_discount.car_id,
+            ): showroom_discount.discount
+            for showroom_discount in showroom_discounts
+        }
+
+        car_prices_with_discount = []
 
         for showroom_car in showroom_cars:
 
-            price = showroom_car.price
+            showroom_car_discount = showroom_discounts_map.get(
+                (showroom_car.showroom_id, showroom_car.car_id),
+                Decimal(0.0),
+            )
+            price = (showroom_car.price - showroom_car_discount)
 
-            if price > customer.balance:
-                continue
+            car_prices_with_discount.append(price)
 
-            customer.balance -= price
+        min_price_with_discount = min(car_prices_with_discount)
 
-            Offer(
-                customer=customer,
-                car=showroom_car.car,
-                price=price,
-                showroom=showroom_car.showroom,
-            ).save()
+        if min_price_with_discount > customer.balance:
+            continue
+
+        customer.balance -= min_price_with_discount
+
+        Offer.objects.create(
+            customer=customer,
+            car=showroom_car.car,
+            price=showroom_car.price,
+            showroom=showroom_car.showroom,
+        )
 
         customer.save()
