@@ -5,24 +5,32 @@ from django.db.models import Q
 
 from celery import app
 
-from customer.models import Customer, Offer
+from customer.models import Offer, PurchaseHistory
 
 from showroom.models import CarOfShowroom, ShowroomSale
 
 
 @app.task
 def customer_buy_cars():
-    for customer in Customer.objects.all():
+    for active_offer in Offer.objects.filter(is_active=True).all():
 
-        find_suppliers_q = (
-                Q(car__manufacturer__startswith=customer.get('manufacturer')) &
-                Q(car__brand__startswith=customer.get('brand')) &
-                Q(car__color__startswith=customer.get('color')) &
-                Q(car__type__startswith=customer.get('type')) &
-                Q(car__price__lte=customer.get('price'))
-        )
+        customer_car_query = Q()
 
-        showroom_cars = CarOfShowroom.objects.filter(find_suppliers_q)
+        if active_offer.requested_car_manufacturer:
+            customer_car_query &= Q(
+                car__manufacturer__name__startswith=active_offer.requested_car_manufacturer,
+            )
+
+        if active_offer.requested_car_brand:
+            customer_car_query &= Q(car__brand__startswith=active_offer.requested_car_brand)
+
+        if active_offer.requested_car_color:
+            customer_car_query &= Q(car__color__startswith=active_offer.requested_car_color)
+
+        if active_offer.requested_car_type:
+            customer_car_query &= Q(car__type__startswith=active_offer.requested_car_type)
+
+        showroom_cars = CarOfShowroom.objects.filter(customer_car_query)
 
         showroom_discounts = ShowroomSale.objects.filter(
             date_end__lte=datetime.utcnow(),
@@ -58,16 +66,23 @@ def customer_buy_cars():
 
         min_price_with_discount = min(car_prices_with_discount)
 
-        if min_price_with_discount > customer.balance:
-            continue
+        if (
+                (min_price_with_discount > active_offer.customer.balance)
+                and (min_price_with_discount > active_offer.max_price)
+        ):
+            return
 
-        customer.balance -= min_price_with_discount
+        active_offer.customer.balance -= min_price_with_discount
 
-        Offer.objects.create(
-            customer=customer,
-            car=showroom_car.car,
-            price=showroom_car.price,
-            showroom=showroom_car.showroom,
+        active_offer.is_active = True
+
+        PurchaseHistory.objects.create(
+            customer=active_offer.customer,
+            offer=active_offer,
+            car=showroom_cars.car,
+            showroom=showroom,
+            total_price=min_price_with_discount,
         )
 
-        customer.save()
+        active_offer.save()
+        active_offer.customer.save()

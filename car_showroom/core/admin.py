@@ -32,6 +32,5 @@ class CarAdmin(admin.ModelAdmin):
         'type',
         'engine_power',
         'transmission',
-        'price',
     )
 

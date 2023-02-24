@@ -69,6 +69,8 @@ class CarOfSupplier(CreatedAt, UpdatedAt, SoftDelete):
         blank=True,
     )
 
+    price = models.DecimalField(max_digits=5, decimal_places=1)
+
     count = models.PositiveIntegerField(verbose_name="Count of car", default=1)
 
 

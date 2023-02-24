@@ -83,6 +83,8 @@ class CarOfShowroom(CreatedAt, UpdatedAt, SoftDelete):
        blank=True,
     )
 
+    price = models.DecimalField(max_digits=5, decimal_places=1)
+
     count = models.PositiveIntegerField(default=1)
 
 

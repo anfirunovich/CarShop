@@ -27,3 +27,4 @@ class OfferSerializer(serializers.ModelSerializer):
             'car',
             'max_price',
         )
+

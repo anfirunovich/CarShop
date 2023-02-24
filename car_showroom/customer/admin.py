@@ -18,7 +18,12 @@ class CustomerModelAdmin(admin.ModelAdmin):
 @admin.register(Offer)
 class OfferModelAdmin(admin.ModelAdmin):
     list_display = (
+        'requested_car_manufacturer',
+        'requested_car_brand',
+        'requested_car_color',
+        'requested_car_type',
         'customer',
-        'car',
         'max_price',
     )
+
+
