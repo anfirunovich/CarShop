@@ -68,7 +68,7 @@ class CarOfShowroom(CreatedAt, UpdatedAt, SoftDelete):
     )
 
     showroom = models.ForeignKey(
-        Showroom,
+        'Showroom',
         verbose_name="Showroom",
         on_delete=models.CASCADE,
         null=True,
@@ -98,7 +98,7 @@ class ShowroomSale(CreatedAt, UpdatedAt, SoftDelete):
     )
 
     showroom = models.ForeignKey(
-       Showroom,
+       'Showroom',
        verbose_name="Showroom",
        on_delete=models.CASCADE,
        null=True,
@@ -108,3 +108,69 @@ class ShowroomSale(CreatedAt, UpdatedAt, SoftDelete):
     discount = DecimalRangeField(default=1)
     end_date = models.DateField(blank=True)
 
+
+class ShowroomOffer(CreatedAt, SoftDelete, UpdatedAt):
+
+    requested_car_manufacturer = models.CharField(
+        max_length=20,
+        verbose_name="Manufacturer requested by showroom",
+        blank=True,
+        null=True,
+    )
+
+    requested_car_brand = models.CharField(
+        max_length=20,
+        verbose_name="Brand requested by showroom",
+        blank=True,
+        null=True,
+    )
+
+    requested_car_color = models.CharField(
+        max_length=20,
+        verbose_name="Color requested by showroom",
+        blank=True,
+        null=True,
+    )
+
+    requested_car_type = models.CharField(
+        max_length=20,
+        verbose_name="Type requested by showroom",
+        blank=True,
+        null=True,
+    )
+
+    showroom = models.ForeignKey('Showroom', on_delete=models.CASCADE)
+    max_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+class ShowroomPurchaseHistory(CreatedAt, SoftDelete, UpdatedAt):
+
+    showroom = models.ForeignKey(
+        "showroom.Showroom",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+
+    offer = models.ForeignKey(
+        ShowroomOffer,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    car = models.ForeignKey(
+        Car,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    supplier = models.ForeignKey(
+        "supplier.Supplier",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)

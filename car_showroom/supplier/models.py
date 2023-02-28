@@ -60,7 +60,7 @@ class CarOfSupplier(CreatedAt, UpdatedAt, SoftDelete):
     )
 
     supplier = models.ForeignKey(
-        Supplier,
+        "supplier.Supplier",
         verbose_name="Supplier",
         related_name="cars_of_suppliers",
         related_query_name="car_of_supplier",

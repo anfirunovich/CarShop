@@ -5,26 +5,32 @@ from django.db.models import Q, F
 
 from celery import app
 
-from showroom.models import Showroom, CarOfShowroom
+from showroom.models import CarOfShowroom, ShowroomOffer, ShowroomPurchaseHistory
 
 from supplier.models import SupplierSale, CarOfSupplier
 
 
 @app.task
 def showroom_buy_cars():
-    for showroom in Showroom.objects.all():
-        car = showroom.query
+    for active_offer in ShowroomOffer.objects.filter(is_active=True).all():
 
-        find_suppliers_q = (
-                Q(car__manufacturer__startswith=car.get('manufacturer')) &
-                Q(car__brand__startswith=car.get('brand')) &
-                Q(car__color__startswith=car.get('color')) &
-                Q(car__type__startswith=car.get('type')) &
-                Q(car__price__lte=car.get('price'))
-        )
+        showroom_car_query = Q()
 
-        supplier_cars = CarOfSupplier.objects.filter(find_suppliers_q)
-        showroom_cars = CarOfShowroom.objects.filter(showroom__name__iexact=showroom.name)
+        if active_offer.requested_car_manufacturer:
+            showroom_car_query &= Q(
+                car__manufacturer__name__startswith=active_offer.requested_car_manufacturer,
+            )
+
+        if active_offer.requested_car_brand:
+            showroom_car_query &= Q(car__brand__startswith=active_offer.requested_car_brand)
+
+        if active_offer.requested_car_color:
+            showroom_car_query &= Q(car__color__startswith=active_offer.requested_car_color)
+
+        if active_offer.requested_car_type:
+            showroom_car_query &= Q(car__type__startswith=active_offer.requested_car_type)
+
+        supplier_cars = CarOfSupplier.objects.filter(showroom_car_query)
 
         supplier_discounts = SupplierSale.objects.filter(
             date_end__lte=datetime.utcnow(),
@@ -46,6 +52,10 @@ def showroom_buy_cars():
             for supplier_discount in supplier_discounts
         }
 
+        min_price_with_discount = Decimal(float("inf"))
+        min_price_supplier = None
+        min_price_car = None
+
         for supplier_car in supplier_cars:
 
             supplier_car_discount = showroom_discounts_map.get(
@@ -55,21 +65,26 @@ def showroom_buy_cars():
 
             price = (supplier_car.price - supplier_car_discount / 100)
 
-            if price > showroom.balance:
+            if price < min_price_with_discount:
+                min_price_with_discount = price
+                min_price_car = supplier_car.car
+                min_price_supplier = supplier_car.supplier
+
+            if price > active_offer.showroom.balance:
                 continue
 
-            showroom.balance -= price
+            active_offer.showroom.balance -= price
 
-            showroom_cars.update_or_create(
-                car=supplier_car.car,
-                showroom=showroom,
-                supplier=supplier_car.supplier,
-                defaults={
-                    'count': F('count') + 1
-                }
+            ShowroomPurchaseHistory.objects.create(
+                showroom=active_offer.showroom,
+                offer=active_offer,
+                car=min_price_car,
+                supplier=min_price_supplier,
+                total_price=min_price_with_discount,
             )
 
-        showroom.save()
+        active_offer.save()
+        active_offer.showroom.save()
 
 
 
