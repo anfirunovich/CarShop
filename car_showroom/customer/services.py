@@ -52,19 +52,23 @@ def customer_buy_cars():
             for showroom_discount in showroom_discounts
         }
 
-        car_prices_with_discount = []
+        min_price_with_discount = Decimal(float("inf"))
+        min_price_showroom = None
+        min_price_car = None
 
         for showroom_car in showroom_cars:
 
             showroom_car_discount = showroom_discounts_map.get(
                 (showroom_car.showroom_id, showroom_car.car_id),
                 Decimal(0.0),
+
             )
-            price = (showroom_car.price - showroom_car_discount)
+            price = (showroom_car.price - showroom_car_discount / 100)
 
-            car_prices_with_discount.append(price)
-
-        min_price_with_discount = min(car_prices_with_discount)
+            if price < min_price_with_discount:
+                min_price_with_discount = price
+                min_price_car = showroom_car.car
+                min_price_showroom = showroom_car.showroom
 
         if (
                 (min_price_with_discount > active_offer.customer.balance)
@@ -79,8 +83,8 @@ def customer_buy_cars():
         PurchaseHistory.objects.create(
             customer=active_offer.customer,
             offer=active_offer,
-            car=showroom_cars.car,
-            showroom=showroom,
+            car=min_price_car,
+            showroom=min_price_showroom,
             total_price=min_price_with_discount,
         )
 

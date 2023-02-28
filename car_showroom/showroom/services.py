@@ -53,7 +53,7 @@ def showroom_buy_cars():
                 Decimal(0.0),
             )
 
-            price = (supplier_car.price - supplier_car_discount)
+            price = (supplier_car.price - supplier_car_discount / 100)
 
             if price > showroom.balance:
                 continue
