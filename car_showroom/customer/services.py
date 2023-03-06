@@ -63,7 +63,7 @@ def customer_buy_cars():
                 Decimal(0.0),
 
             )
-            price = (showroom_car.price - showroom_car_discount / 100)
+            price = showroom_car.price - (showroom_car.price * (showroom_car_discount / 100))
 
             if price < min_price_with_discount:
                 min_price_with_discount = price
