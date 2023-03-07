@@ -118,8 +118,6 @@ class Car(CreatedAt, UpdatedAt, SoftDelete):
         choices=TransmissionType.choices(),
     )
 
-    price = DecimalRangeField(null=True)
-
     def __str__(self):
         return f"{self.manufacturer.name} {self.brand}"
 

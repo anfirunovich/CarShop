@@ -60,7 +60,7 @@ class CarOfSupplier(CreatedAt, UpdatedAt, SoftDelete):
     )
 
     supplier = models.ForeignKey(
-        Supplier,
+        "supplier.Supplier",
         verbose_name="Supplier",
         related_name="cars_of_suppliers",
         related_query_name="car_of_supplier",
@@ -68,6 +68,8 @@ class CarOfSupplier(CreatedAt, UpdatedAt, SoftDelete):
         null=True,
         blank=True,
     )
+
+    price = models.DecimalField(max_digits=5, decimal_places=1)
 
     count = models.PositiveIntegerField(verbose_name="Count of car", default=1)
 
